@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Classification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        img {
+            max-width: 300px;
+            max-height: 300px;
+            margin-top: 20px;
+        }
+
+        #prediction {
+            font-size: 1.2em;
+            color: #007bff;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Upload an Image</h1>
+    <form id="upload-form" action="/predict" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <input type="submit" value="Upload and Predict">
+    </form>
+    <h2 id="prediction"></h2>
+    <img id="uploaded-image" src="" alt="Uploaded Image" style="display:none;">
+    <script>
+        document.querySelector('form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            document.getElementById('prediction').innerText = 'Prediction: ' + result.prediction;
+
+            // Display the uploaded image
+            const fileInput = document.querySelector('input[type="file"]');
+            const imageUrl = URL.createObjectURL(fileInput.files[0]);
+            const uploadedImage = document.getElementById('uploaded-image');
+            uploadedImage.src = imageUrl;
+            uploadedImage.style.display = 'block';
+        });
+    </script>
+</body>
+
+</html>
